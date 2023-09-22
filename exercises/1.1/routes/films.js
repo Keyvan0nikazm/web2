@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 
-const Film = [
+const films = [
 {
   id : 1,
   title : 'the greatest showman',
@@ -30,8 +30,8 @@ const Film = [
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  console.log(' GET/ film');
-  res.json(Film);
+  console.log(' GET /films');
+  res.json(films);
 });
 
 module.exports = router;
