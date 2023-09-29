@@ -5,26 +5,26 @@ var router = express.Router();
 const films = [
 {
   id : 1,
-  title : 'the greatest showman',
+  title : "the greatest showman",
   duration : 152,
   budget : 140,
-  link : 'https://web.french-stream.bio/films/14879-the-greatest-showman-film-streaming-complet-vf.html',
+  link : "https://web.french-stream.bio/films/14879-the-greatest-showman-film-streaming-complet-vf.html",
 },
 
 {
   id : 2,
-  title : 'batman the dark knight',
+  title : "batman the dark knight",
   duration : 250,
   budget : 150,
-  link : 'https://web.french-stream.bio/films/15405-the-dark-knight-rises-film-streaming-complet-vf.html',
+  link : "https://web.french-stream.bio/films/15405-the-dark-knight-rises-film-streaming-complet-vf.html",
 },
 
 {
   id : 3,
-  title : 'will hunting',
+  title : "will hunting",
   duration : 140,
   budget : 100,
-  link : 'https://web.french-stream.bio/films/13957-will-hunting-film-streaming-complet-vf.html',
+  link : "https://web.french-stream.bio/films/13957-will-hunting-film-streaming-complet-vf.html",
 }
 ]
 
@@ -45,14 +45,16 @@ router.get('/:id', function(req, res) {
 */
 router.get('/', function(req,res,next) {
   const info = req?.query['minimum-duration']? req.query['minimum-duration']: undefined;
+
   let orderFilms;
-  if(info)
+  if(info){
   orderFilms = [...films].filter(film => film.duration > info);
+  }
   console.log("GET/ films");
   res.json(orderFilms ?? films);
 });
 
-router.post('/', (req,res) => {
+router.post('/', (req,res, next) => {
   const title = req?.body?.title?.length !== 0 ? req.body.title : undefined;
   const duration = req?.body?.duration?.length !== 0 ? req.body.duration : undefined;
   const budget = req?.body?.budget?.length !== 0 ? req.body.budget : undefined;
@@ -73,7 +75,6 @@ router.post('/', (req,res) => {
   };
 
   films.push(newfilm);
-
   res.json(newfilm);
 
 })
