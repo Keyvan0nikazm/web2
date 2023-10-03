@@ -3,7 +3,7 @@ POST http://localhost:3000/films
 Content-Type: application/json
 
 {
-    "title" : "will hunting",
+    "title" : "batman the dark knight",
     "duration" : 154,
     "budget" : 100,
     "link" : "https://"
@@ -12,4 +12,3 @@ Content-Type: application/json
 ### read all film
 GET http://localhost:3000/films
 Content-Type: application/json;
-

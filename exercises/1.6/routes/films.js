@@ -46,6 +46,8 @@ router.get('/:id', function(req, res) {
 router.get('/', function(req,res,next) {
   const info = req?.query['minimum-duration']? req.query['minimum-duration']: undefined;
 
+  if(info <= 0) return res.sendStatus(400);
+
   let orderFilms;
   if(info){
   orderFilms = [...films].filter(film => film.duration > info);
@@ -60,7 +62,8 @@ router.post('/', (req,res, next) => {
   const budget = req?.body?.budget?.length !== 0 ? req.body.budget : undefined;
   const link = req?.body?.link?.length !== 0 ? req.body.link : undefined;
 
-  if(!title || !duration || !budget || !link) return res.status(400);
+  if(!title || !duration || !budget || !link) return res.sendStatus(400);
+
 
   const lastItemIndex = films?.length !== 0 ? films.length - 1 : undefined;
   const lastId = lastItemIndex !== undefined ? films[lastItemIndex]?.id : 0;
@@ -74,9 +77,92 @@ router.post('/', (req,res, next) => {
     link : link,
   };
 
+  const findTitle = films.find((film) => film.title === title)
+
+  if(findTitle) return res.sendStatus(409).send("ce film existe deja");
+
+
   films.push(newfilm);
   res.json(newfilm);
 
-})
+});
+
+
+router.delete('/:id', (req, res)  => {
+
+  const foundIndex = films.findIndex((film) => film.id == req.params.id);
+
+  if(foundIndex < 0 ) return res.sendStatus(404);
+
+  const info = films.splice(foundIndex, 1);
+  const info2 = info[0];
+
+  res.json(info2);
+});
+
+router.patch('/:id', (req,res) => {
+  const title = req?.body?.title;
+  const duration = req?.body?.duration;
+  const budget = req?.body?.budget;
+  const link = req?.body?.link;
+
+  if ((!title && !duration && !budget && !link) || title?.length === 0 || duration?.length === 0 || budget?.length === 0 || link?.length === 0 ) return res.sendStatus(400);
+
+  const foundFilm = films.findIndex(film => film.id == req.params.id);
+
+  if(foundFilm < 0) return res.sendStatus(404);
+
+  const updateFilms = {...films[foundFilm], ...req.body};
+
+  films[foundFilm] = updateFilms;
+
+  res.json(updateFilms);
+});
+
+router.put('/:id',(req, res) => {
+
+  const id = req.params.id;
+  const title = req?.body?.title;
+  const duration = req?.body?.duration;
+  const budget = req?.body?.budget;
+  const link = req?.body?.link; 
+
+  if(!title || !duration || !budget || !link) return res.sendStatus(400);
+
+  if(id > films.length){
+
+const newFilm = {
+  id : id,
+  title : title,
+  duration : duration,
+  budget: budget,
+  link: link,
+
+};
+
+const result = films.find(e => e.title === newFilm.title);
+
+if(result){
+
+  return res.sendStatus(400);
+  
+}
+
+  films.push(newFilm);
+  return res.json(newFilm);
+
+  }
+
+  const findIndex = films.findIndex(e => e.id == req.params.id);
+
+  if(findIndex < 0) return res.sendStatus(404);
+
+  const updateFilm = {...films[findIndex], ...req.body};
+
+  films[findIndex] = updateFilm;
+
+  res.json(updateFilm);
+
+});
 
 module.exports = router;

@@ -1,0 +1,37 @@
+### Create a film
+POST http://localhost:3000/films
+Content-Type: application/json
+
+{
+    "title" : "keyvan the hero",
+    "duration" : 154,
+    "budget" : 100,
+    "link" : "https://"
+}
+
+### read all film
+GET http://localhost:3000/films
+Content-Type: application/json
+
+### delete films identify by id 8
+DELETE http://localhost:3000/films/3
+
+
+### change a variable of a film
+PATCH http://localhost:3000/films/2
+Content-Type: application/json
+
+{
+    "title" : "la guerre"
+}
+
+### request put 
+PUT http://localhost:3000/films/1
+Content-Type: application/json
+
+{
+    "title" : "la guerre des chauves",
+    "duration" : 160,
+    "budget" : 50,
+    "link" : "https://"
+}

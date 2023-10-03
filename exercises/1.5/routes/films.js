@@ -46,6 +46,8 @@ router.get('/:id', function(req, res) {
 router.get('/', function(req,res,next) {
   const info = req?.query['minimum-duration']? req.query['minimum-duration']: undefined;
 
+  if(info <= 0) return res.status(400);
+
   let orderFilms;
   if(info){
   orderFilms = [...films].filter(film => film.duration > info);
@@ -62,9 +64,14 @@ router.post('/', (req,res, next) => {
 
   if(!title || !duration || !budget || !link) return res.status(400);
 
+
   const lastItemIndex = films?.length !== 0 ? films.length - 1 : undefined;
   const lastId = lastItemIndex !== undefined ? films[lastItemIndex]?.id : 0;
   const nextId = lastId + 1;
+
+  const findTitle = films.find((film) => film.title === title)
+
+  if(findTitle.title !== -1) return res.status(409).send("ce film existe deja");
 
   const newfilm = {
     id : nextId,
@@ -73,6 +80,7 @@ router.post('/', (req,res, next) => {
     budget : budget,
     link : link,
   };
+
 
   films.push(newfilm);
   res.json(newfilm);
