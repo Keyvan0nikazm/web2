@@ -2,7 +2,7 @@ var express = require('express');
 const { serialize, parse } = require('../utils/json');
 var router = express.Router();
 
-const jsonDbPath = __dirname + '/../data/films.json';
+const jsonDbPath = __dirname + '/../data/pizzas.json';
 
 const films = [
 {
@@ -103,7 +103,7 @@ router.post('/', (req,res, next) => {
 router.delete('/:id', (req, res)  => {
 
   const filmsDelete = parse(jsonDbPath, films);
-  const foundIndex = filmsDelete.findIndex((film) => film.id == req.params.id);
+  const foundIndex = filmsDelete.findIndex((film) => film.id == Number(req.params.id));
 
   if(foundIndex < 0 ) return res.sendStatus(404);
 
@@ -170,7 +170,7 @@ if(result){
 
   }
 
-  const findIndex = putFilms.findIndex(e => e.id == req.params.id);
+  const findIndex = putFilms.findIndex(e => e.id == Number(req.params.id));
 
   if(findIndex < 0) {
 

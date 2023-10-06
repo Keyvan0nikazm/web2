@@ -1,8 +1,15 @@
 var express = require('express');
 const { serialize, parse } = require('../utils/json');
-var router = express.Router();
-
 const jsonDbPath = __dirname + '/../data/films.json';
+const router = express.Router();
+const {
+  readOneFilms,
+  readAllFilms,
+  createOneFilms,
+  deleteOneFilms,
+  patchfilms,
+  putFilms,
+} = require('../models/films');
 
 const films = [
 {
@@ -32,15 +39,11 @@ const films = [
 
 // Read the film identified by an id in the films
 router.get('/:id', function(req, res) {
-    console.log(`GET /film / ${req.params.id}`);
-
-    const filmsID = parse(jsonDbPath, films);
-
-    const indexofFilmFound = filmsID.findIndex((filmsID) => filmsID.id = req.params.id);
+    const findFilmById = readOneFilms(req?.params?.id);
 
     if(indexofFilmFound < 0) return res.sendStatus(404);
 
-    res.json(filmsID[indexofFilmFound]);
+    res.json(findFilmById);
 })
 
 
@@ -48,19 +51,16 @@ router.get('/:id', function(req, res) {
    GET films?minimum-duration=value : ascending order by duration
 */
 router.get('/', function(req,res,next) {
-  const info = req?.query['minimum-duration']? req.query['minimum-duration']: undefined;
+  const minimumDuration = req?.query['minimum-duration']? req.query['minimum-duration']: undefined;
 
-  if(info <= 0) return res.sendStatus(400);
+  const allFilmsFilter = readAllFilms(minimumDuration);
 
-  const filmsInfo = parse(jsonDbPath, films)
-
-  let orderFilms;
-  if(info){
-  orderFilms = [...filmsInfo].filter(filmsInfo => filmsInfo.duration > info);
-  }
+  if (allFilmsFilter == undefined) return res.sendStatus(404);
   console.log("GET/ films");
-  res.json(orderFilms ?? filmsInfo);
+  res.json(allFilmsFilter);
 });
+
+
 
 router.post('/', (req,res, next) => {
   const indexNew = parse(jsonDbPath, films);
@@ -71,31 +71,18 @@ router.post('/', (req,res, next) => {
 
   if(!title || !duration || !budget || !link) return res.sendStatus(400);
 
-
-
-
-  const lastItemIndex = indexNew?.length !== 0 ? indexNew.length - 1 : undefined;
-  const lastId = lastItemIndex !== undefined ? indexNew[lastItemIndex]?.id : 0;
-  const nextId = lastId + 1;
-
-  const newfilm = {
-    id : nextId,
-    title : title,
-    duration : duration,
-    budget : budget,
-    link : link,
-  };
+  const PostFilms = createOneFilms(title, duration, budget, link)
 
   const findTitle = films.find((films) => films.title === title)
 
   if(findTitle) return res.sendStatus(409).send("ce film existe deja");
 
 
-  indexNew.push(newfilm);
+  indexNew.push(PostFilms);
 
   serialize(jsonDbPath, indexNew);
 
-  res.json(newfilm);
+  res.json(PostFilms);
 
 });
 

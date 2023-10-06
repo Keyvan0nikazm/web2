@@ -1,0 +1,37 @@
+### Create a film
+POST http://localhost:3000/films
+Content-Type: application/json
+
+{
+    "title" : "ZZZZZ",
+    "duration" : 5,
+    "budget" : 0,
+    "link" : "https://"
+}
+
+### read all film
+GET http://localhost:3000/films
+Content-Type: application/json
+
+### delete films identify by id
+DELETE http://localhost:3000/films/4
+
+
+### change a variable of a film
+PATCH http://localhost:3000/films/2
+Content-Type: application/json
+
+{
+    "title" : "la guerres"
+}
+
+### request put 
+PUT http://localhost:3000/films/1
+Content-Type: application/json
+
+{
+    "title" : "la guerre du chauve",
+    "duration" : 160,
+    "budget" : 50,
+    "link" : "https://"
+}
