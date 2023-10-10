@@ -2,7 +2,7 @@ var express = require('express');
 const { serialize, parse } = require('../utils/json');
 var router = express.Router();
 
-const jsonDbPath = __dirname + '/../data/pizzas.json';
+const jsonDbPath = __dirname + '/../data/films.json';
 
 const films = [
 {
@@ -34,7 +34,7 @@ const films = [
 function readOneFilms (findFilmById){
     const filmsID = parse(jsonDbPath, films);
 
-    const indexofFilmFound = filmsID.findIndex((filmsID) => filmsID.id = findFilmById);
+    const indexofFilmFound = filmsID.findIndex((filmsID) => filmsID.id == findFilmById);
 
     if(findFilmById <= 0) return undefined;
 
@@ -63,7 +63,8 @@ function createOneFilms(title, duration, budget, link) {
   const indexNew = parse(jsonDbPath, films);
 
   const newfilm = {
-    id : getNextID,
+    // TU AVAIS MIS getNextID sans les parenthèses
+    id : getNextID(),
     title : title,
     duration : duration,
     budget : budget,
@@ -93,36 +94,106 @@ function getNextID (){
 }
 
 
-function deleteOneFilms(id){
+function deleteOneFilms(deleteFilms){
 
   const filmsDelete = parse(jsonDbPath, films);
-  const foundIndex = filmsDelete.findIndex((film) => film.id == req.params.id);
+  const foundIndex = filmsDelete.findIndex((film) => film.id == deleteFilms);
 
-  if(foundIndex < 0 ) return res.sendStatus(404);
+  console.log( foundIndex );
+
+  if(foundIndex <= 0 ) return undefined;
 
   const info = filmsDelete.splice(foundIndex, 1);
-  const info2 = info[0];
+  // pas besoin de info2
+
+  //const info2 = info[0];
 
   serialize(jsonDbPath, filmsDelete);
-
-  return info2;
+  // return info2 avant
+  return info;
 };
 
-function patchfilms(id) {
+function patchForfilms(id, title, duration, budget, link) {
   const patchfilms = parse(jsonDbPath, films);
 
-  const foundFilm = patchfilms.findIndex(films => films.id == req.params.id);
+  const foundFilm = patchfilms.findIndex(films => films.id == id);
 
-  if(foundFilm < 0) return res.sendStatus(404);
+  /* Exemple :
 
-  const updateFilms = {...patchfilms[foundFilm], ...req.body};
+    ...patchfilms[foundFilm], ...ALL
+
+    ...patchfilms[foundFilm] ->
+
+    {
+      id : 1
+      title:"the greatest showman",
+      duration:170,
+      budget:140,
+      link:"https:"
+    }
+
+    ...ALL -> 
+
+    {
+      id : 1
+      title:"nouveau titre",
+      duration:189
+    }
+
+    {...patchfilms[foundFilm], ...ALL} ->
+
+    {
+      id : 1
+      title:"nouveau titre",
+      duration:189,
+      budget:140,
+      link:"https:"
+    }
+
+    -> ça ne remplace que si les attributs (title, duration) ont les 
+    mêmes noms dans les deux objets
+
+    dans ton cas, tu avais :
+
+    {
+      PatchFilms : 1
+    }
+
+    ça faisait donc ça :
+
+    {
+      PatchFilms : 1,
+      id : 1
+      title:"the greatest showman",
+      duration:170,
+      budget:140,
+      link:"https:"
+    }
+
+    // Voilà
+    //merci monsieur
+
+
+  */
+
+  const ALL = {
+    // ON NE CHANGE JAMAIS L'ID, pas besoin de le mettre
+    title,
+    duration,
+    budget,
+    link,
+  }
+
+  if(foundFilm < 0) return undefined;
+
+  const updateFilms = {...patchfilms[foundFilm], ...ALL};
 
   patchfilms[foundFilm] = updateFilms;
 
   return updateFilms;
 };
 
-function putFilms(id){
+function putForFilms(PUTfilms){
 
   const putFilms = parse(jsonDbPath, films);
 
@@ -141,7 +212,7 @@ const result = putFilms.find(e => e.title === newFilm.title);
 
 if(result){
 
-  return res.sendStatus(400);
+  return undefined;
   
 }
 
@@ -154,7 +225,7 @@ if(result){
 
   if(findIndex < 0) {
 
-    return res.sendStatus(404);
+    return undefined;
   }
 
   const updateFilm = {...putFilms[findIndex], ...req.body};
@@ -170,6 +241,6 @@ module.exports = {
     readAllFilms,
     createOneFilms,
     deleteOneFilms,
-    patchfilms,
-    putFilms,
+    patchForfilms,
+    putForFilms,
 };
